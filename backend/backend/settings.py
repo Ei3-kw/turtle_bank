@@ -16,7 +16,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # FILL ME
-ANTHROPIC_API_KEY =
+ANTHROPIC_API_KEY = "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"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
