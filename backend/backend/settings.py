@@ -16,7 +16,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # FILL ME
-ANTHROPIC_API_KEY = "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"
+ANTHROPIC_API_KEY = ("sk-ant-api03-3SUR5ZFeR50vwv9675UfZlAgEOtXIsXEF3TXoCWsWw"
+                     "-efuWsnyc2ow53sjfZ5BWHMxqyAAjRzWt51lx0HSmTMQ-3zbsgwAA")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -27,11 +28,13 @@ SECRET_KEY = 'django-insecure-9^l@l##q1pca$&jr9bst(xa0ha6r^-8%fx*rdj1d)5t^ja#(up
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS = ['*']
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',  # Add any other origins as needed
+]
 
 # Application definition
-
+CORS_ORIGIN_ALLOW_ALL = True
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,17 +45,28 @@ INSTALLED_APPS = [
     "api",
     "rest_framework",
     "drf_yasg",
+    "corsheaders",
 ]
 
+# CORS_ALLOWED_ORIGINS = ["*"]
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+
+# CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'backend.urls'
 
