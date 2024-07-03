@@ -4,7 +4,7 @@ from .models import UserRequest
 from .serialisers import UserRequestSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from .claude_utils import get_claude_response
 
 
 class UserRequestListCreate(generics.ListCreateAPIView):
@@ -20,4 +20,13 @@ class UserRequestRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserRequestSerializer
     lookup_field = "pk"
 
+
+class ClaudeAPIView(APIView):
+    def post(self, request):
+        prompt = request.data.get('prompt')
+        if not prompt:
+            return Response({'error': 'Prompt is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        claude_response = get_claude_response(prompt)
+        return Response({'response': claude_response})
 
