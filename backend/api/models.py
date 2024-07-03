@@ -17,12 +17,13 @@ class UserRequest(models.Model):
     def get(self):
         prompt = f"""
         Based on the following user information, suggest a list of items to purchase in Australia related to their goal.
-        give suggestions on changing spending behaviour if necessary (current saving pace cannot reach the goal within time frame)
+        give suggestions on changing spending behaviour if ProposedMontlyExpense < current MontlyExpense
         Notice that rent and car expenses would mostly be fixed cost
 
         where
-            - current saving of the month = Monthly Income - sum(Spending Behavior)
+            - current MontlyExpense = sum(Spending Behavior)
             - GoalAmount = sum of the Price in Products
+            - ProposedMontlySaving = 30 * GoalAmount/ Time Frame
 
         DONOT response anything other than JSON
 

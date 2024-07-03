@@ -16,7 +16,7 @@ class UserRequestListCreate(generics.ListCreateAPIView):
         UserRequest.objects.all().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def create(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -32,6 +32,8 @@ class UserRequestListCreate(generics.ListCreateAPIView):
             parsed_response = json.loads(claude_response)
         except json.JSONDecodeError:
             parsed_response = {"error": "Invalid response format from Claude"}
+            return Response(parsed_response, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
         # Combine the serializer data with the Claude response
         response_data = {
