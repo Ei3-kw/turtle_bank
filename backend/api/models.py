@@ -14,16 +14,10 @@ class UserRequest(models.Model):
     def __str__(self):
         return self.goal
 
-    def get(self):
+    def get_products(self):
         prompt = f"""
         Based on the following user information, suggest a list of items to purchase in Australia related to their goal.
-        give suggestions on changing spending behaviour if ProposedMontlyExpense < current MontlyExpense
-        Notice that rent and car expenses would mostly be fixed cost
-
-        where
-            - current MontlyExpense = sum(Spending Behavior)
-            - GoalAmount = sum of the Price in Products
-            - ProposedMontlySaving = 30 * GoalAmount/ Time Frame
+        where GoalAmount = sum of the Price in Products
 
         DONOT response anything other than JSON
 
@@ -36,29 +30,66 @@ class UserRequest(models.Model):
         Provide the response in the specified JSON format if the request is realistic:
         {{
             "Goal": $goal,
-            "GoalAmount": int
+            "GoalAmount": int,
             "TimeFrame": int,
             "Products": [
                 {{"Product": $productName, "Price": int}},
                 {{"Product": $productName, "Price": int}}...
-                ],
-            "ProposedMontlySaving": float,
-            "ProposedMontlyExpense": float,
-            "OverallSuggestion": $overallSuggestion,
-            "SpendingCategory": {{
-                $category: {{
-                    "Percentage": float,
-                    "Amount": float,
-                    "SuggestionAmount": float
-                }}
-            }}
+                ]
         }}
 
         If the request is unrealistic or trolling, respond an error message in JSON format:
-        {{"error": "reason"}}
+        {{"ERROR": "reason"}}
 
         Ensure all prices are in Australian dollars and are realistic for the Australian market.
         """
 
         return get_claude_response(prompt)
+
+
+
+    # prompt = f"""
+    #     Based on the following user information, suggest a list of items to purchase in Australia related to their goal.
+    #     give suggestions on changing spending behaviour if ProposedMontlyExpense < current MontlyExpense
+    #     Notice that rent and car expenses would mostly be fixed cost
+
+    #     where
+    #         - current MontlyExpense = sum(Spending Behavior)
+    #         - GoalAmount = sum of the Price in Products
+    #         - ProposedMontlySaving = 30 * GoalAmount/ Time Frame
+
+    #     DONOT response anything other than JSON
+
+    #     User Information:
+    #     Goal: {self.goal}
+    #     Time Frame: {self.timeFrame} days
+    #     Monthly Income: ${self.monthlyIncome}
+    #     Spending Behavior: {json.dumps(self.spendingBehavior)}
+
+    #     Provide the response in the specified JSON format if the request is realistic:
+    #     {{
+    #         "Goal": $goal,
+    #         "GoalAmount": int
+    #         "TimeFrame": int,
+    #         "Products": [
+    #             {{"Product": $productName, "Price": int}},
+    #             {{"Product": $productName, "Price": int}}...
+    #             ],
+    #         "ProposedMontlySaving": float,
+    #         "ProposedMontlyExpense": float,
+    #         "OverallSuggestion": $overallSuggestion,
+    #         "SpendingCategory": {{
+    #             $category: {{
+    #                 "Percentage": float,
+    #                 "Amount": float,
+    #                 "SuggestionAmount": float
+    #             }}
+    #         }}
+    #     }}
+
+    #     If the request is unrealistic or trolling, respond an error message in JSON format:
+    #     {{"ERROR": "reason"}}
+
+    #     Ensure all prices are in Australian dollars and are realistic for the Australian market.
+    #     """
 

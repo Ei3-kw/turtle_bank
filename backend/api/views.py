@@ -24,7 +24,7 @@ class UserRequestListCreate(generics.ListCreateAPIView):
 
         # Get the Claude response for the newly created UserRequest
         user_request = serializer.instance
-        claude_response = user_request.get()
+        claude_response = user_request.get_products()
 
         print(claude_response)
         # Parse the Claude response

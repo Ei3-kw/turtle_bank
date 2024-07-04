@@ -3,3 +3,7 @@ djangorestframework
 environs
 anthropic
 drf-yasg
+django-cors-headers
+node
+npm
+react-scripts
