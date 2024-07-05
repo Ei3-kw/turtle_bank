@@ -1,4 +1,52 @@
-# Getting Started with Create React App
+
+# WestPack Hackathon
+- Teamname - :turtlecat:
+- Members
+	- Ella WANG
+	- Kwan Li
+
+## Summary of idea
+### Objective
+We're developing an innovative solution that combines artificial intelligence and dynamic programming to create personalized savings plans. Our platform will help users visualize and achieve their financial goals while accounting for factors like inflation.
+
+### Key Features
+- AI-driven analysis of user's financial habits and goals
+- Dynamic programming algorithm to optimize savings strategies
+
+### TODO
+- Customized savings roadmap with clear milestones
+- Real-time adjustments based on user behavior and economic factors
+- Gamification elements to boost motivation and engagement
+
+### Value Proposition
+- For Users - Clear, achievable path to financial goals with built-in motivation
+- For Banks - Increased customer engagement and growth in savings deposits
+
+### Inspiration
+Kwan came up with the initial idea in the shower. Also Ella struggled with saving due to a lack of clear, motivating goals. This personal experience highlighted the need for a tool that not only plans but also inspires consistent saving behavior.
+
+### Potential Impact
+By making saving more accessible and engaging, we aim to improve financial health for individuals while creating new opportunities for banks to attract and retain customers.
+
+### YouTube
+https://youtu.be/n9aLYnhlMbU
+
+
+# Backend
+*by Ella*
+
+- at root dir `pip3 install -r requirements.txt`
+- Fill in ClaudeAI key in `backend/settings.py`
+- `python3 manage.py makemigrations`
+- `python3 manage.py migrate`
+- `python3 manage.py runserver`
+
+# Frontend
+*by Kwan*
+
+## Set Up
+### `npm install`
+### `npm install -D tailwindcss`
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
