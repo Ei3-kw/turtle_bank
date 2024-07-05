@@ -1,0 +1,87 @@
+
+
+1. 1000
+
+{
+    "CarPayment": {
+        "Percentage": 0.3,
+        "Amount": 300.0
+    },
+    "Grocery": {
+        "Percentage": 0.1,
+        "Amount": 100.0
+    },
+    "Dining": {
+        "Percentage": 0.2,
+        "Amount": 200.0
+    },
+    "Transport": {
+        "Percentage": 0.135,
+        "Amount": 135.76
+    },
+    "Utilities": {
+        "Percentage": 0.06,
+        "Amount": 66.4
+    }
+}
+
+
+
+2. 2855.42
+
+{
+    "Fines": {
+        "Percentage": 0.455,
+        "Amount": 1300.0
+    },
+    "Grocery": {
+        "Percentage": 0.035,
+        "Amount": 100.0
+    },
+    "Travelling": {
+        "Percentage": 0.105,
+        "Amount": 300.0
+    },
+    "Gaming": {
+        "Percentage": 0.147,
+        "Amount": 420.0
+    },
+    "Donation": {
+        "Percentage": 0.024,
+        "Amount": 69.42
+    },
+    "Shopping": {
+        "Percentage": 0.233,
+        "Amount": 666.0
+    }
+}
+
+
+3. 8858.42
+
+{
+    "Fines": {
+        "Percentage": 0.147,
+        "Amount": 1300.0
+    },
+    "Grocery": {
+        "Percentage": 0.011,
+        "Amount": 100.0
+    },
+    "Travelling": {
+        "Percentage": 0.034,
+        "Amount": 300.0
+    },
+    "Gaming": {
+        "Percentage": 0.047,
+        "Amount": 420.0
+    },
+    "Donation": {
+        "Percentage": 0.008,
+        "Amount": 69.42
+    },
+    "Shopping": {
+        "Percentage": 0.753,
+        "Amount": 6669.0
+    }
+}
