@@ -35,18 +35,19 @@ class UserRequestListCreate(generics.ListCreateAPIView):
                 current_saving = user_request.monthlyIncome - current_spending
                 required_saving = 30 * parsed_response["GoalAmount"] / user_request.timeFrame
 
-                if current_saving < required_saving:
-                    claude_spending = json.loads(user_request.get_spendings())
-                    parsed_response["ProposedMonthlyExpense"] = sum_amounts(claude_spending["SpendingCategory"])
-                    parsed_response["ProposedMonthlySaving"] = user_request.monthlyIncome - parsed_response["ProposedMonthlyExpense"]
-                    parsed_response = deep_merge(parsed_response, claude_spending)
+                if not user_request.minimisingSaving:
+                    if current_saving < required_saving:
+                        claude_spending = json.loads(user_request.get_spendings(required_saving))
+                        parsed_response["ProposedMonthlyExpense"] = sum_amounts(claude_spending["SpendingCategory"])
+                        parsed_response["ProposedMonthlySaving"] = user_request.monthlyIncome - parsed_response["ProposedMonthlyExpense"]
+                        parsed_response = deep_merge(parsed_response, claude_spending)
+                    else:
+                        parsed_response["ProposedMonthlyExpense"] = current_spending
+                        parsed_response["ProposedMonthlySaving"] = current_saving
+                        parsed_response["OverallSuggestion"] = "No need to change spending behaviour"
+                        parsed_response["SpendingCategory"] = add_suggestion(user_request.spendingBehavior)
                 else:
-                    parsed_response["ProposedMonthlyExpense"] = current_spending
-                    parsed_response["ProposedMonthlySaving"] = current_saving
-                    parsed_response["OverallSuggestion"] = "No need to change spending behaviour"
-                    parsed_response["SpendingCategory"] = add_suggestion(user_request.spendingBehavior)
-
-            # min_savings, savings_plan = planner(parsed_response['GoalAmount'], parsed_response['TimeFrame'])
+                    min_savings, savings_plan = planner(parsed_response['GoalAmount'], parsed_response['TimeFrame'])
 
         except json.JSONDecodeError:
             parsed_response = {"error": "Invalid response format from Claude"}

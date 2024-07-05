@@ -19,6 +19,12 @@ const GoalSaverPage = () => {
     const [aiSuggestion, setAiSuggestion] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [minimisingSaving, setMinimisingSaving] = useState(false);
+    const [spendingBehaviors, setSpendingBehaviors] = useState([
+    ]);
+    const [newCategory, setNewCategory] = useState("");
+    const [newPercentage, setNewPercentage] = useState("");
+    const [newAmount, setNewAmount] = useState("");
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -26,6 +32,33 @@ const GoalSaverPage = () => {
         }, 3000);
         return () => clearInterval(intervalId);
     }, []);
+
+    const handleAddBehavior = (e) => {
+        e.preventDefault();
+        if (newCategory && newPercentage && newAmount) {
+            setSpendingBehaviors([
+                ...spendingBehaviors,
+                {
+                    category: newCategory,
+                    percentage: parseFloat(newPercentage),
+                    amount: parseFloat(newAmount)
+                }
+            ]);
+            setNewCategory("");
+            setNewPercentage("");
+            setNewAmount("");
+        }
+    };
+
+    const handleRemoveBehavior = (index) => {
+        setSpendingBehaviors(spendingBehaviors.filter((_, i) => i !== index));
+    };
+
+    const handleEditBehavior = (index, field, value) => {
+        const updatedBehaviors = [...spendingBehaviors];
+        updatedBehaviors[index][field] = field === 'category' ? value : parseFloat(value);
+        setSpendingBehaviors(updatedBehaviors);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -37,13 +70,22 @@ const GoalSaverPage = () => {
         const targetDateObj = new Date(targetDate);
         const timeframeInDays = differenceInDays(targetDateObj, today);
 
+        const formattedSpendingBehavior = spendingBehaviors.reduce((acc, behavior) => {
+            acc[behavior.category] = {
+                Percentage: behavior.percentage / 100,
+                Amount: behavior.amount
+            };
+            return acc;
+        }, {});
+
         const formattedData = {
             id: 1,
             goal: goal,
             timeFrame: timeframeInDays,
             monthlyIncome: parseFloat(monthlyIncome),
             monthlyExpense: parseFloat(monthlyExpense),
-            spendingBehavior: ""
+            spendingBehavior: formattedSpendingBehavior,
+            minimisingSaving: minimisingSaving
         };
 
         try {
@@ -52,7 +94,6 @@ const GoalSaverPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
-
                 },
                 body: JSON.stringify(formattedData),
             });
@@ -197,6 +238,88 @@ const GoalSaverPage = () => {
                         placeholder="Enter your monthly expenses"
                     />
                 </div>
+                <div>
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            checked={minimisingSaving}
+                            onChange={(e) => setMinimisingSaving(e.target.checked)}
+                            className="form-checkbox h-5 w-5 text-indigo-600"
+                        />
+                        <span className="ml-2 text-gray-700">Minimize Savings</span>
+                    </label>
+                </div>
+                <div>
+                    <h2 className="text-xl font-semibold mb-2">Spending Behaviors</h2>
+                    {spendingBehaviors.map((behavior, index) => (
+                        <div key={index} className="flex items-center space-x-2 mb-2">
+                            <input
+                                type="text"
+                                value={behavior.category}
+                                onChange={(e) => handleEditBehavior(index, 'category', e.target.value)}
+                                className="flex-1 px-2 py-1 border rounded"
+                            />
+                            <input
+                                type="number"
+                                value={behavior.percentage}
+                                onChange={(e) => handleEditBehavior(index, 'percentage', e.target.value)}
+                                className="w-20 px-2 py-1 border rounded"
+                                step="0.1"
+                            />
+                            <input
+                                type="number"
+                                value={behavior.amount}
+                                onChange={(e) => handleEditBehavior(index, 'amount', e.target.value)}
+                                className="w-24 px-2 py-1 border rounded"
+                                step="0.01"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => handleRemoveBehavior(index)}
+                                className="px-2 py-1 bg-red-500 text-white rounded"
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    ))}
+                    <div className="flex items-center space-x-2 mt-2">
+                        <input
+                            type="text"
+                            value={newCategory}
+                            onChange={(e) => setNewCategory(e.target.value)}
+                            placeholder="Category"
+                            className="flex-1 px-2 py-1 border rounded"
+                        />
+                        <input
+                            type="number"
+                            value={newPercentage}
+                            onChange={(e) => setNewPercentage(e.target.value)}
+                            placeholder="Percentage"
+                            className="w-20 px-2 py-1 border rounded"
+                            step="0.1"
+                        />
+                        <input
+                            type="number"
+                            value={newAmount}
+                            onChange={(e) => setNewAmount(e.target.value)}
+                            placeholder="Amount"
+                            className="w-24 px-2 py-1 border rounded"
+                            step="0.01"
+                        />
+                        <button
+                            type="button"
+                            onClick={handleAddBehavior}
+                            className="px-2 py-1 bg-green-500 text-white rounded"
+                        >
+                            Add
+                        </button>
+                    </div>
+                </div>
+                <button
+                    type="submit"
+                    className="w-full px-8 py-3 text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+                    disabled={isLoading}
+                />
                 <button
                     type="submit"
                     className="w-full px-8 py-3 text-white bg-indigo-600 rounded-full hover:bg-indigo-700 focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"

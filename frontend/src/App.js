@@ -4,7 +4,6 @@ import Layout from './components/Layout/Layout';
 import {Dashboard} from './pages/Dashboard';
 import {GoalSaverPage} from './pages/GoalSaverPage'
 // import Goals from './pages/Goals';
-// import Analysis from './pages/Analysis';
 
 function App() {
   return (
@@ -13,7 +12,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/goals" element={<GoalSaverPage />} />
-          {/*<Route path="/analysis" element={<Analysis />} />*/}
         </Routes>
       </Layout>
     </Router>

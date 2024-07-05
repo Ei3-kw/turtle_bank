@@ -1,12 +1,16 @@
+from django import forms
 from django.db import models
+from django.core.exceptions import ValidationError
 from .claude_utils import get_claude_response
+from .helper import planner
 import json
+
 
 # Create your models here.
 class UserRequest(models.Model):
-    # why not self.?
     goal = models.CharField(max_length=200)
     timeFrame = models.IntegerField()
+    minimisingSaving = models.BooleanField(default=False)
     monthlyIncome = models.FloatField()
     spendingBehavior = models.JSONField()  # For storing dict [category: percentage]
 
@@ -41,20 +45,18 @@ class UserRequest(models.Model):
         {{"ERROR": "reason"}}
 
         Ensure all prices are in Australian dollars and are realistic for the Australian market.
+        Include plane tickets & accommodation fee if it's travelling
         """
 
         return get_claude_response(prompt)
 
-    def get_spendings(self):
+    def get_spendings(self, requiredSaving):
         prompt = f"""
         Based on the following user information
         give suggestions on changing spending behaviour
         Notice that:
             - rent and car expenses would mostly be fixed cost
             - people need to buy enough groceries to survive
-
-        where
-            - GoalAmount = sum of the Price in Products
 
         DONOT response anything other than JSON
 
@@ -76,6 +78,7 @@ class UserRequest(models.Model):
             }}
         }}
 
+        Proposed monthly spending should add up to at most {self.monthlyIncome - requiredSaving}
         Ensure all prices are in Australian dollars and are realistic for the Australian market.
         """
         return get_claude_response(prompt)

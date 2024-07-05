@@ -6,4 +6,4 @@ class UserRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserRequest
-        fields = ["id", "goal", "timeFrame", "monthlyIncome", "spendingBehavior"]
+        fields = ["id", "goal", "timeFrame", "monthlyIncome", "minimisingSaving", "spendingBehavior"]
