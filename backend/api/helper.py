@@ -36,6 +36,26 @@
 
 import numpy as np
 
+def deep_merge(dict1, dict2):
+    result = dict1.copy()
+    for key, value in dict2.items():
+        if isinstance(value, dict):
+            result[key] = deep_merge(result.get(key, {}), value)
+        else:
+            result[key] = value
+    return result
+
+def sum_amounts(data):
+    total = 0
+    for category in data.values():
+        total += category['Amount']
+    return total
+
+def add_suggestion(data):
+    for category, values in data.items():
+        values["SuggestionAmount"] = values["Amount"]
+    return data
+
 def income(t):
     return 10000
 
@@ -80,7 +100,7 @@ def planner(goal_amount, period, interest=0.05):
 
 if __name__ == '__main__':
     goal_amount = 100000
-    period = 1800
+    period = 3201
     min_savings, savings_plan = planner(goal_amount, period)
     print(f"Minimum total savings needed: {min_savings}")
     print(f"Optimal savings plan: {savings_plan}")

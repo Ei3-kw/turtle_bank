@@ -8,7 +8,6 @@ class UserRequest(models.Model):
     goal = models.CharField(max_length=200)
     timeFrame = models.IntegerField()
     monthlyIncome = models.FloatField()
-    monthlyExpense = models.FloatField()
     spendingBehavior = models.JSONField()  # For storing dict [category: percentage]
 
     def __str__(self):
@@ -46,7 +45,40 @@ class UserRequest(models.Model):
 
         return get_claude_response(prompt)
 
+    def get_spendings(self):
+        prompt = f"""
+        Based on the following user information
+        give suggestions on changing spending behaviour
+        Notice that:
+            - rent and car expenses would mostly be fixed cost
+            - people need to buy enough groceries to survive
 
+        where
+            - GoalAmount = sum of the Price in Products
+
+        DONOT response anything other than JSON
+
+        User Information:
+        Goal: {self.goal}
+        Time Frame: {self.timeFrame} days
+        Monthly Income: ${self.monthlyIncome}
+        Spending Behavior: {json.dumps(self.spendingBehavior)}
+
+        Provide the response in the specified JSON format if the request is realistic:
+        {{
+            "OverallSuggestion": $overallSuggestion,
+            "SpendingCategory": {{
+                $category: {{
+                    "Percentage": float,
+                    "Amount": float,
+                    "SuggestionAmount": float
+                }}
+            }}
+        }}
+
+        Ensure all prices are in Australian dollars and are realistic for the Australian market.
+        """
+        return get_claude_response(prompt)
 
     # prompt = f"""
     #     Based on the following user information, suggest a list of items to purchase in Australia related to their goal.
@@ -56,7 +88,7 @@ class UserRequest(models.Model):
     #     where
     #         - current MontlyExpense = sum(Spending Behavior)
     #         - GoalAmount = sum of the Price in Products
-    #         - ProposedMontlySaving = 30 * GoalAmount/ Time Frame
+    #         - ProposedMonthlySaving = 30 * GoalAmount/ Time Frame
 
     #     DONOT response anything other than JSON
 
@@ -75,7 +107,7 @@ class UserRequest(models.Model):
     #             {{"Product": $productName, "Price": int}},
     #             {{"Product": $productName, "Price": int}}...
     #             ],
-    #         "ProposedMontlySaving": float,
+    #         "ProposedMonthlySaving": float,
     #         "ProposedMontlyExpense": float,
     #         "OverallSuggestion": $overallSuggestion,
     #         "SpendingCategory": {{

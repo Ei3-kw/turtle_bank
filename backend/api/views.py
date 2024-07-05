@@ -5,6 +5,7 @@ from .serialisers import UserRequestSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .claude_utils import get_claude_response
+from .helper import planner, deep_merge, sum_amounts, add_suggestion
 import json
 
 
@@ -24,12 +25,29 @@ class UserRequestListCreate(generics.ListCreateAPIView):
 
         # Get the Claude response for the newly created UserRequest
         user_request = serializer.instance
-        claude_response = user_request.get_products()
 
-        print(claude_response)
         # Parse the Claude response
         try:
-            parsed_response = json.loads(claude_response)
+            parsed_response = json.loads(user_request.get_products())
+
+            if "ERROR" not in parsed_response:
+                current_spending = sum_amounts(user_request.spendingBehavior)
+                current_saving = user_request.monthlyIncome - current_spending
+                required_saving = 30 * parsed_response["GoalAmount"] / user_request.timeFrame
+
+                if current_saving < required_saving:
+                    claude_spending = json.loads(user_request.get_spendings())
+                    parsed_response["ProposedMonthlyExpense"] = sum_amounts(claude_spending["SpendingCategory"])
+                    parsed_response["ProposedMonthlySaving"] = user_request.monthlyIncome - parsed_response["ProposedMonthlyExpense"]
+                    parsed_response = deep_merge(parsed_response, claude_spending)
+                else:
+                    parsed_response["ProposedMonthlyExpense"] = current_spending
+                    parsed_response["ProposedMonthlySaving"] = current_saving
+                    parsed_response["OverallSuggestion"] = "No need to change spending behaviour"
+                    parsed_response["SpendingCategory"] = add_suggestion(user_request.spendingBehavior)
+
+            # min_savings, savings_plan = planner(parsed_response['GoalAmount'], parsed_response['TimeFrame'])
+
         except json.JSONDecodeError:
             parsed_response = {"error": "Invalid response format from Claude"}
             return Response(parsed_response, status=status.HTTP_405_METHOD_NOT_ALLOWED)
