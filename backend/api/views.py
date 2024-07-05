@@ -47,7 +47,25 @@ class UserRequestListCreate(generics.ListCreateAPIView):
                         parsed_response["OverallSuggestion"] = "No need to change spending behaviour"
                         parsed_response["SpendingCategory"] = add_suggestion(user_request.spendingBehavior)
                 else:
-                    min_savings, savings_plan = planner(parsed_response['GoalAmount'], parsed_response['TimeFrame'])
+                    parsed_response["MinimumSaving"], saving_plan = planner(parsed_response['GoalAmount'], parsed_response['TimeFrame'])
+                    parsed_response["ProposedMonthlyExpense"] = []
+                    parsed_response["ProposedMonthlySaving"] = []
+                    parsed_response["Spending"] = []
+                    i = 0
+                    for required_saving in saving_plan:
+                        if current_saving < required_saving:
+                            claude_spending = json.loads(user_request.get_spendings(required_saving))
+                            parsed_response["ProposedMonthlyExpense"].append(sum_amounts(claude_spending["SpendingCategory"], "SuggestionAmount"))
+                            parsed_response["ProposedMonthlySaving"].append(user_request.monthlyIncome - parsed_response["ProposedMonthlyExpense"][i])
+                            parsed_response["Spending"].append(claude_spending)
+                        else:
+                            parsed_response["ProposedMonthlyExpense"].append(current_spending)
+                            parsed_response["ProposedMonthlySaving"].append(required_saving)
+                            parsed_response["Spending"].append({
+                                "OverallSuggestion": "No need to change spending behaviour",
+                                "SpendingCategory": add_suggestion(user_request.spendingBehavior)
+                            })
+                        i += 1
 
         except json.JSONDecodeError:
             parsed_response = {"error": "Invalid response format from Claude"}

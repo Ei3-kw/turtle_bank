@@ -45,10 +45,10 @@ def deep_merge(dict1, dict2):
             result[key] = value
     return result
 
-def sum_amounts(data):
+def sum_amounts(data, x='Amount'):
     total = 0
     for category in data.values():
-        total += category['Amount']
+        total += category[x]
     return total
 
 def add_suggestion(data):
